@@ -6,44 +6,45 @@ export default function UserForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage("");
 
-    // 1. Registrar usuario en Supabase Auth
-    const { data, error } = await supabase.auth.signUp({
+    const { data: { user }, error } = await supabase.auth.signUp({
       email,
       password,
     });
 
     if (error) {
-      alert("Error: " + error.message);
+      setMessage("❌ Error: " + error.message);
+      setLoading(false);
       return;
     }
 
-    // 2. Insertar perfil en la tabla profiles
-    const userId = data.user?.id;
-    if (userId) {
+    if (user) {
       const { error: profileError } = await supabase
         .from("profiles")
-        .insert([{ id: userId, username }]);
+        .insert([{ id: user.id, username, role: "user" }]);
 
       if (profileError) {
-        alert("Error creando perfil: " + profileError.message);
+        setMessage("❌ Error creando perfil: " + profileError.message);
       } else {
-        alert("Usuario registrado con éxito!");
+        setMessage("✅ Usuario registrado con éxito!");
         setEmail("");
         setPassword("");
         setUsername("");
       }
     }
+
+    setLoading(false);
   };
 
   return (
-    <form
-      onSubmit={handleRegister}
-      className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-md"
-    >
+    <form onSubmit={handleRegister} className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-md">
       <input
         type="text"
         placeholder="Nombre de usuario"
@@ -67,10 +68,12 @@ export default function UserForm() {
       />
       <button
         type="submit"
-        className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600"
+        disabled={loading}
+        className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
       >
-        Registrarse
+        {loading ? "Registrando..." : "Registrarse"}
       </button>
+      {message && <p className="text-center text-sm">{message}</p>}
     </form>
   );
 }

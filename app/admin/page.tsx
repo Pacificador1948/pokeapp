@@ -1,17 +1,38 @@
+"use client";
 import { supabase } from "@/lib/supabaseClient";
 
 export default async function AdminPage() {
-  const { data: { user } } = await supabase.auth.getUser();
+  // 1. Obtener usuario autenticado
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-  if (!user) return <p>Debes iniciar sesión</p>;
+  if (userError) {
+    return <p className="text-red-600">❌ Error obteniendo usuario: {userError.message}</p>;
+  }
 
-  const { data: profile } = await supabase
+  if (!user) {
+    return <p className="text-yellow-600">⚠️ Debes iniciar sesión para acceder a esta página.</p>;
+  }
+
+  // 2. Obtener perfil del usuario
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") return <p>No tienes permisos</p>;
+  if (profileError) {
+    return <p className="text-red-600">❌ Error cargando perfil: {profileError.message}</p>;
+  }
 
-  return <p>Bienvenido administrador</p>;
+  if (!profile) {
+    return <p className="text-yellow-600">⚠️ No se encontró tu perfil en la base de datos.</p>;
+  }
+
+  // 3. Validar rol
+  if (profile.role !== "admin") {
+    return <p className="text-red-600">🚫 No tienes permisos para acceder a esta sección.</p>;
+  }
+
+  // 4. Si todo está bien
+  return <p className="text-green-600 font-bold">✅ Bienvenido administrador</p>;
 }
