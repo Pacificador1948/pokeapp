@@ -24,22 +24,28 @@ export default function AuthForm() {
   };
 
   return (
-    <form onSubmit={handleLogin} className="flex flex-col gap-4 p-4 bg-gray-50 rounded shadow">
+    <form
+      onSubmit={handleLogin}
+      className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-md"
+    >
       <input
         type="email"
-        placeholder="Correo"
+        placeholder="Correo electrónico"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="border p-2 rounded"
+        className="border p-3 rounded-lg placeholder-gray-500 text-black"
       />
       <input
         type="password"
         placeholder="Contraseña"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="border p-2 rounded"
+        className="border p-3 rounded-lg placeholder-gray-500 text-black"
       />
-      <button type="submit" className="bg-green-500 text-white p-2 rounded hover:bg-green-600">
+      <button
+        type="submit"
+        className="bg-green-500 text-white p-3 rounded-lg hover:bg-green-600"
+      >
         Iniciar sesión
       </button>
     </form>
