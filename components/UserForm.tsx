@@ -31,9 +31,9 @@ export default function UserForm() {
         .insert([{ id: user.id, username, role: "user" }]);
 
       if (profileError) {
-        setMessage("❌ Error creando perfil: " + profileError.message);
+        setMessage("Error creando perfil: " + profileError.message);
       } else {
-        setMessage("✅ Usuario registrado con éxito!");
+        setMessage("Usuario registrado con éxito!");
         setEmail("");
         setPassword("");
         setUsername("");

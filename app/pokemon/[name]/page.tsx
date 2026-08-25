@@ -9,8 +9,7 @@ export default async function PokemonPage({ params }: { params: { name: string }
       <PokemonCard
         name={pokemon.name}
         sprites={pokemon.sprites}
-        types={pokemon.types}
-      />
+        types={pokemon.types} id={""}      />
     </div>
   );
 }

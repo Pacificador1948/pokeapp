@@ -11,9 +11,9 @@ export default function EditPokemonPage({ params }: { params: { id: string } }) 
     e.preventDefault();
     try {
       await updatePokemon(params.id, name, type);
-      setMessage("✅ Pokémon actualizado!");
+      setMessage("Pokémon actualizado!");
     } catch (error: any) {
-      setMessage("❌ Error: " + error.message);
+      setMessage("Error: " + error.message);
     }
   };
 
