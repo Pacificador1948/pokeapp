@@ -8,72 +8,105 @@ export default function UserForm() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (loading) return; // 🚫 evita doble envío
     setLoading(true);
     setMessage("");
+    setIsError(false);
 
-    const { data: { user }, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    try {
+      const { data: { user }, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    if (error) {
-      setMessage("❌ Error: " + error.message);
-      setLoading(false);
-      return;
-    }
-
-    if (user) {
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .insert([{ id: user.id, username, role: "user" }]);
-
-      if (profileError) {
-        setMessage("Error creando perfil: " + profileError.message);
-      } else {
-        setMessage("Usuario registrado con éxito!");
-        setEmail("");
-        setPassword("");
-        setUsername("");
+      if (error) {
+        setMessage("❌ " + error.message);
+        setIsError(true);
+        return;
       }
-    }
 
-    setLoading(false);
+      if (user) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .insert([{ id: user.id, username, role: "user" }]);
+
+        if (profileError) {
+          setMessage("❌ Error creando perfil: " + profileError.message);
+          setIsError(true);
+        } else {
+          setMessage("✅ Usuario registrado con éxito!");
+          setIsError(false);
+          setEmail("");
+          setPassword("");
+          setUsername("");
+        }
+      }
+    } catch (err: any) {
+      setMessage("❌ Error inesperado: " + err.message);
+      setIsError(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <form onSubmit={handleRegister} className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-md">
+    <form
+      onSubmit={handleRegister}
+      className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-md max-w-md mx-auto"
+    >
+      <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
+        Registro de Usuario
+      </h2>
+
       <input
         type="text"
         placeholder="Nombre de usuario"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        className="border p-3 rounded-lg placeholder-gray-500 text-black"
+        autoComplete="username"
+        className="border border-gray-300 p-3 rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <input
         type="email"
         placeholder="Correo electrónico"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="border p-3 rounded-lg placeholder-gray-500 text-black"
+        autoComplete="email"
+        className="border border-gray-300 p-3 rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <input
         type="password"
         placeholder="Contraseña"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="border p-3 rounded-lg placeholder-gray-500 text-black"
+        autoComplete="current-password"
+        className="border border-gray-300 p-3 rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
+
       <button
         type="submit"
         disabled={loading}
-        className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
+        className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
       >
         {loading ? "Registrando..." : "Registrarse"}
       </button>
-      {message && <p className="text-center text-sm">{message}</p>}
+
+      {message && (
+        <p
+          className={`text-center text-sm font-medium p-2 rounded ${
+            isError
+              ? "bg-red-100 text-red-700 border border-red-300"
+              : "bg-green-100 text-green-700 border border-green-300"
+          }`}
+        >
+          {message}
+        </p>
+      )}
     </form>
   );
 }

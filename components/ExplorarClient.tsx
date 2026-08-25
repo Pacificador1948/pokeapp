@@ -23,7 +23,7 @@ export default function ExplorarClient({ pokemons }: { pokemons: any[] }) {
         placeholder="Buscar Pokémon..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="border p-2 rounded mb-4 w-full"
+        className="border p-2 rounded mb-4 w-full -bg-linear-120"
       />
 
       {/* Grid de resultados */}
