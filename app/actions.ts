@@ -32,3 +32,30 @@ export async function deletePokemon(id: string) {
 
   if (error) throw new Error(error.message);
 }
+
+// Crear comentario
+export async function addComment(pokemonId: number, content: string) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("No hay usuario autenticado");
+
+  const { data, error } = await supabase
+    .from("comments")
+    .insert([{ user_id: user.id, pokemon_id: pokemonId, content }]);
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+// Obtener comentarios de un Pokémon
+export async function getComments(pokemonId: number) {
+  const { data, error } = await supabase
+    .from("comments")
+    .select("id, content, created_at, profiles(username)")
+    .eq("pokemon_id", pokemonId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return data;
+}
