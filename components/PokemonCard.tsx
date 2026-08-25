@@ -1,6 +1,8 @@
 import React from "react";
+import { deletePokemon } from "@/app/actions";
 
 interface PokemonCardProps {
+  id: string;
   name: string;
   sprites: {
     front_default: string;
@@ -10,7 +12,7 @@ interface PokemonCardProps {
   types: { type: { name: string } }[];
 }
 
-export default function PokemonCard({ name, sprites, types }: PokemonCardProps) {
+export default function PokemonCard({ id, name, sprites, types }: PokemonCardProps) {
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold capitalize mb-4">{name}</h2>
@@ -30,6 +32,12 @@ export default function PokemonCard({ name, sprites, types }: PokemonCardProps) 
           </li>
         ))}
       </ul>
+      <button
+        onClick={() => deletePokemon(id)}
+        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mt-4"
+      >
+        Eliminar
+      </button>
     </div>
   );
 }
