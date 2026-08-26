@@ -1,4 +1,7 @@
-import React from "react";
+"use client";
+
+import React, { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { deletePokemon } from "@/app/actions";
 
 interface PokemonCardProps {
@@ -13,6 +16,16 @@ interface PokemonCardProps {
 }
 
 export default function PokemonCard({ id, name, sprites, types }: PokemonCardProps) {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleDelete = () => {
+    startTransition(async () => {
+      await deletePokemon(id);
+      router.refresh();
+    });
+  };
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto border border-gray-200">
       <h2 className="text-3xl font-bold capitalize mb-4 text-gray-800 text-center">
@@ -50,10 +63,11 @@ export default function PokemonCard({ id, name, sprites, types }: PokemonCardPro
       </ul>
 
       <button
-        onClick={() => deletePokemon(id)}
-        className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 mt-6 w-full transition-colors font-semibold"
+        onClick={handleDelete}
+        disabled={isPending}
+        className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 mt-6 w-full transition-colors font-semibold disabled:opacity-50"
       >
-        Eliminar
+        {isPending ? "Eliminando..." : "Eliminar"}
       </button>
     </div>
   );

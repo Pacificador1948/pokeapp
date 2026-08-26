@@ -2,15 +2,16 @@
 import { useState } from "react";
 import { updatePokemon } from "@/app/actions";
 
-export default function EditPokemonPage({ params }: { params: { id: string } }) {
+export default async function EditPokemonPage({ params }: { params: Promise<{ id: string }> }) {
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [message, setMessage] = useState("");
+  const { id } = await params;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updatePokemon(params.id, name, type);
+      await updatePokemon(id, name, type);
       setMessage("Pokémon actualizado!");
     } catch (error: any) {
       setMessage("Error: " + error.message);

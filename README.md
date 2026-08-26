@@ -5,7 +5,7 @@ Permite registro/login de usuarios, roles (`user` y `admin`), CRUD completo de P
 
 ---
 
-## 🚀 Demo en vivo
+## Demo en vivo
 
 [URL de Vercel](https://tu-app.vercel.app)
 

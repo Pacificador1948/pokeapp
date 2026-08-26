@@ -1,8 +1,9 @@
 "use server";
 
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabaseServer";
 
 export async function addPokemon(name: string, type: string) {
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -18,6 +19,7 @@ export async function addPokemon(name: string, type: string) {
 }
 
 export async function updatePokemon(id: string, name: string, type: string) {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("pokemons")
     .update({ name, type })
@@ -28,16 +30,18 @@ export async function updatePokemon(id: string, name: string, type: string) {
 }
 
 export async function deletePokemon(id: string) {
+  const supabase = await createClient();
   const { error } = await supabase.from("pokemons").delete().eq("id", id);
 
   if (error) throw new Error(error.message);
 }
 
-// Crear comentario
 export async function addComment(pokemonId: number, content: string) {
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
   if (!user) throw new Error("No hay usuario autenticado");
 
   const { data, error } = await supabase
@@ -48,8 +52,8 @@ export async function addComment(pokemonId: number, content: string) {
   return data;
 }
 
-// Obtener comentarios de un Pokémon
 export async function getComments(pokemonId: number) {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("comments")
     .select("id, content, created_at, profiles(username)")

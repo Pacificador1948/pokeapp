@@ -1,8 +1,9 @@
 import { getPokemonDetail } from "@/lib/pokeapi";
 import CommentsSection from "@/components/CommentsSection";
 
-export default async function PokemonPage({ params }: { params: { id: string } }) {
-  const pokemon = await getPokemonDetail(params.id);
+export default async function PokemonPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const pokemon = await getPokemonDetail(id);
 
   return (
     <div className="p-6">

@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -13,38 +14,33 @@ export default function UserForm() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (loading) return; // 🚫 evita doble envío
+    if (loading) return;
     setLoading(true);
     setMessage("");
     setIsError(false);
 
     try {
-      const { data: { user }, error } = await supabase.auth.signUp({
+      // 1. Enviamos el username dentro de los metadatos de Supabase Auth
+      const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            username: username, // Se pasa directamente al Trigger de la BD
+          },
+        },
       });
 
       if (error) {
         setMessage("❌ " + error.message);
         setIsError(true);
-        return;
-      }
-
-      if (user) {
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .insert([{ id: user.id, username, role: "user" }]);
-
-        if (profileError) {
-          setMessage("❌ Error creando perfil: " + profileError.message);
-          setIsError(true);
-        } else {
-          setMessage("✅ Usuario registrado con éxito!");
-          setIsError(false);
-          setEmail("");
-          setPassword("");
-          setUsername("");
-        }
+      } else {
+        // 2. Si no hay error, el Trigger en Supabase crea el perfil automáticamente
+        setMessage("✅ Usuario registrado con éxito!");
+        setIsError(false);
+        setEmail("");
+        setPassword("");
+        setUsername("");
       }
     } catch (err: any) {
       setMessage("❌ Error inesperado: " + err.message);
@@ -69,6 +65,7 @@ export default function UserForm() {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         autoComplete="username"
+        required
         className="border border-gray-300 p-3 rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <input
@@ -77,6 +74,7 @@ export default function UserForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         autoComplete="email"
+        required
         className="border border-gray-300 p-3 rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <input
@@ -85,6 +83,7 @@ export default function UserForm() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         autoComplete="current-password"
+        required
         className="border border-gray-300 p-3 rounded-lg placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
@@ -109,4 +108,4 @@ export default function UserForm() {
       )}
     </form>
   );
-}
+} 
