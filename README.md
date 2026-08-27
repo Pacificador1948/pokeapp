@@ -2,7 +2,7 @@
 
 Aplicación web interactiva que permite a los usuarios explorar datos detallados de Pokémon mediante la PokéAPI, gestionar una colección personalizada con persistencia en la base de datos y participar en una comunidad compartiendo comentarios en tiempo real.
 
-🔗 **Demo en vivo**: [https://tu-proyecto.vercel.app](https://tu-proyecto.vercel.app) _(reemplaza con tu URL de Vercel)_
+**Demo en vivo**: [https://pokeapp-woad.vercel.app](https://pokeapp-woad.vercel.app)
 
 ---
 
