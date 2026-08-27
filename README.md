@@ -1,53 +1,98 @@
-# PokeApp
+# PokeApp — Plataforma Interactiva de Pokémon
 
-Aplicación web de Pokémon desarrollada con **Next.js 14**, **Supabase** y **Tailwind CSS**.  
-Permite registro/login de usuarios, roles (`user` y `admin`), CRUD completo de Pokémon y comentarios, y consumo de la API pública **PokeAPI**.
+Aplicación web interactiva que permite a los usuarios explorar datos detallados de Pokémon mediante la PokéAPI, gestionar una colección personalizada con persistencia en la base de datos y participar en una comunidad compartiendo comentarios en tiempo real.
 
----
-
-## Demo en vivo
-
-[URL de Vercel](https://tu-app.vercel.app)
+🔗 **Demo en vivo**: [https://tu-proyecto.vercel.app](https://tu-proyecto.vercel.app) _(reemplaza con tu URL de Vercel)_
 
 ---
 
-Stack tecnológico
+## Capturas de pantalla
 
-Next.js 14 (App Router, Server/Client Components)
+![alt text](image.png)
 
-TypeScript
+![alt text](image-1.png)
 
-Tailwind CSS
+![alt text](image-2.png)
 
-Supabase (Auth + PostgreSQL + RLS)
+---
 
-PokeAPI (API externa)
+## Stack tecnológico
 
-Roles de usuario
+- **Next.js**: 15.x / 14.x (App Router & Server Actions)
+- **TypeScript**: 5.x
+- **Tailwind CSS**: 4.x
+- **Supabase**: `@supabase/ssr` (PostgreSQL Database + Auth con Triggers + Row Level Security)
+- **PokéAPI**: REST API externa para la obtención de datos de Pokémon
+- **Vercel**: Plataforma de despliegue continuo (Hosting & CD)
 
-User: puede registrarse, iniciar sesión, explorar Pokémon, crear/editar/eliminar sus Pokémon y comentarios.
+---
 
-Admin: acceso al dashboard de administración.
+## Roles de usuario
 
-Tablas principales
-auth.users → usuarios de Supabase
+- **Usuario Visitante (GUEST)**:
+  - Puede visualizar la página de bienvenida y explorar el listado base de Pokémon.
+  - Tiene acceso a la creación de una nueva cuenta de usuario o inicio de sesión.
 
-profiles → extiende usuarios con rol y username
+- **Usuario Autenticado (USER)**:
+  - Tiene un perfil registrado generado automáticamente en la base de datos vía Trigger.
+  - Puede agregar nuevos Pokémon personalizados a la base de datos local.
+  - Puede eliminar o editar Pokémon asociados a su cuenta.
+  - Puede escribir comentarios en los perfiles de cada Pokémon.
 
-pokemons → registros de Pokémon con relación a profiles
+- **Administrador (ADMIN)**:
+  - Cuenta con acceso exclusivo a la ruta protegida `/admin`.
+  - Dispone de permisos elevados para la gestión global del sistema y usuarios.
 
-comments → comentarios relacionados con usuarios y Pokémon
+---
 
-instalación local
-git clone <repo-url>
-cd pokeapp
-npm install
-npm run dev
+## Modelo de datos
 
-Credenciales de prueba
-User: user@test.com / 123456
+El esquema relacional en PostgreSQL (Supabase) está estructurado de la siguiente manera:
 
-Admin: admin@test.com / 123456
+1. **`auth.users`** _(Tabla interna de Supabase Auth)_:
+   - Contiene la información de autenticación (`id`, `email`, `encrypted_password`).
+
+2. **`public.profiles`**:
+   - `id` (UUID, Primary Key, Foreign Key -> `auth.users.id` con borrado en cascada).
+   - `username` (TEXT, Not Null).
+   - `role` (TEXT, Default: `'user'`).
+   - _Nota: Se crea automáticamente mediante un Trigger de PostgreSQL al registrarse un usuario en `auth.users`._
+
+3. **`public.pokemons`**:
+   - `id` (UUID / BIGINT, Primary Key).
+   - `name` (TEXT, Not Null).
+   - `type` (TEXT, Not Null).
+   - `user_id` (UUID, Foreign Key -> `auth.users.id`).
+   - `created_at` (TIMESTAMP WITH TIME ZONE, Default: `now()`).
+
+4. **`public.comments`**:
+   - `id` (BIGINT / UUID, Primary Key).
+   - `pokemon_id` (BIGINT / INTEGER, Not Null).
+   - `user_id` (UUID, Foreign Key -> `public.profiles.id`).
+   - `content` (TEXT, Not Null).
+   - `created_at` (TIMESTAMP WITH TIME ZONE, Default: `now()`).
+
+---
+
+## Instalación local
+
+Sigue estos pasos para clonar y ejecutar el proyecto localmente en tu entorno de desarrollo:
+
+1. **Clonar el repositorio:**
+   ```bash
+   git clone [https://github.com/Pacificador1948/pokeapp.git](https://github.com/Pacificador1948/pokeapp.git)
+   cd pokeapp
+   ```
+
+##Rol de usario
+Correo: usuario@ejemplo.com
+
+Contraseña: Usuario123
+
+##Rol de administrador
+Correo: admin@ejemplo.com
+
+Contraseña: Admin123
 
 Autor
 
